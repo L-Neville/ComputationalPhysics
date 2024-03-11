@@ -8,6 +8,10 @@ class IsingModel:
         self.spins = np.zeros(num, dtype=int) # the default spins before being configured
 
     def configure(self, state):
+        if not isinstance(state, int):
+            raise ValueError("State representation not an integer")
+        if not (0 <= state < 2*self.num):
+            raise ValueError("State representation too large or too small")
         bin_state = format(state, f'0{self.num}b') 
         # parse the numerical representation of state, which yields a binary number with length identical to number of spins
         self.spins = np.array([1 if char=='1' else -1 for char in bin_state])
@@ -21,7 +25,3 @@ class IsingModel:
         spins_shifted = np.append(self.spins[1:], self.spins[0])
         return -self.J * np.sum(self.spins * spins_shifted)
     
-# a test
-is_test = IsingModel(10, 1)
-is_test.configure(7)
-print(is_test.get_energy())
