@@ -116,76 +116,9 @@ class IsingModelHoneycomb():
         return HZ/Z/self.row/self.col, (H2Z/Z-(HZ/Z)**2)/self.T**2, M2Z/Z/(self.row*self.col)**2, M4Z*Z/M2Z**2
 
 
-            
-    
-    # def get_average_hamiltonion(self):
-    #     HZ, Z = 0, 0
-    #     for s in range(2**(self.sites)):
-    #         temp = IsingModelHoneycomb(self.J, self.T, 4, 4, spin_config=s)
-    #         h = temp.get_hamiltonion()
-    #         z = np.exp(-h/temp.T)
-    #         Z += z
-    #         HZ += z*h
-    #     return HZ / Z
-    
-    # def get_average_magnetization_squared(self):
-    #     MZ, Z = 0, 0
-    #     for s in range(2**(self.sites)):
-    #         temp = IsingModelHoneycomb(self.J, self.T, 4, 4, spin_config=s)
-    #         m = temp.get_magnetization()
-    #         z = np.exp(-temp.get_hamiltonion()/temp.T)
-    #         Z += z
-    #         MZ += z*m**2
-    #     return MZ / Z
-    
-    # def get_average_magnetization_4squared(self):
-    #     MZ, Z = 0, 0
-    #     for s in range(2**(self.sites)):
-    #         temp = IsingModelHoneycomb(self.J, self.T, 4, 4, spin_config=s)
-    #         m = temp.get_magnetization()
-    #         z = np.exp(-temp.get_hamiltonion()/temp.T)
-    #         Z += z
-    #         MZ += z*m**4
-    #     return MZ / Z    
-
-# a = time()
-# E, C, U_M = [], [], []
-# for t in np.arange(.05,4,.05):
-#     temp = IsingModelHoneycomb(1,t,4,4,0)
-#     e, c, u_m = temp.get_average()
-#     E.append(e)
-#     C.append(c)
-#     U_M.append(u_m)
-# b = time()
-# print(f'overall takes {b-a}s to calculate under all temperatures')
-
-# data = [E, C, U_M]
-# with open('honeycomb8by4.txt', 'w') as file:
-#     json.dump(data, file)
-
-with open('honeycomb5by5-2-load.txt', 'r') as file:
-    data = json.load(file)
-    E, C, M_N, U_M = data[0], data[1], data[2], data[3]
-
-# fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(16, 12))
-# plt.subplots_adjust(hspace=.4)
-# ax1.plot(np.arange(.05,4,.05), E, label='energy')
-# ax1.set_xlabel('$T$', fontsize=22)
-# ax1.set_ylabel('$E$', fontsize=22)
-# ax1.set_title('energy per spin', fontsize=22)
-# ax1.legend(fontsize=22)
-# ax2.plot(np.arange(.05,4,.05), C, label='heat capacity')
-# ax2.set_xlabel('$T$', fontsize=22)
-# ax2.set_ylabel('$C$', fontsize=22)
-# ax2.set_title('specific heat per spin', fontsize=22)
-# ax2.legend(fontsize=22)
-# ax3.plot(np.arange(.05,4,.05), U_M, label='Binder ratio')
-# ax3.set_xlabel('$T$', fontsize=22)
-# ax3.set_ylabel('$U_M$', fontsize=22)
-# ax3.set_title('Binder ratio', fontsize=22)
-# ax3.legend(fontsize=22)
-# plt.savefig('honeycomb.jpg', dpi=300)
-# plt.show()
+# with open('honeycomb2by2-2-load.txt', 'r') as file:
+#     data = json.load(file)
+#     E, C, M_N, U_M = data[0], data[1], data[2], data[3]
 
 """ unpack the class and use @njit to accelerate """
 # a = time()
@@ -207,7 +140,7 @@ with open('honeycomb5by5-2-load.txt', 'r') as file:
 #             spins = spins
 #             # magnetization
 #             ups, n = 0, s
-#             while n: # count the number of '1' in binary m
+#             while n:
 #                 n &= n - 1
 #                 ups += 1 
 #             m = 2*ups-sites
@@ -239,7 +172,7 @@ with open('honeycomb5by5-2-load.txt', 'r') as file:
 #     return [E, C, M_N, U_M]
 # data = main()
 # E, C, M_N, U_M = data[0], data[1], data[2], data[3]
-# with open('honeycomb5by5-2.txt', 'w') as file:
+# with open(r'Data/honeycomb5by5-2.txt', 'w') as file:
 #     json.dump(data, file)
 # b = time()
 # print(f'overall takes {b-a}s after introducing @njit')
@@ -270,5 +203,53 @@ with open('honeycomb5by5-2-load.txt', 'r') as file:
 # plt.savefig('honeycomb-2.jpg', dpi=300)
 # plt.show()
 
-if __name__ == '__main__':
-    unittest.main()
+scale = [2, 3, 4, 5]
+all_data = {'E':{}, 'C':{}, 'M_N':{}, 'U_M':{}}
+marker = {2:'o', 3:'^', 4:'s', 5:'D'}
+color = {2:'red', 3:'orange', 4:'green', 5:'blue'}
+for n in scale:
+    path = r'Data/honeycomb' + str(n) + 'by' + str(n) + r'-2.txt'
+    with open(path, 'r') as file:
+        data = json.load(file)
+        E, C, M_N, U_M = data[0], data[1], data[2], data[3]
+        all_data['E'][str(n)] = E
+        all_data['C'][str(n)] = C
+        all_data['M_N'][str(n)] = M_N
+        all_data['U_M'][str(n)] = U_M
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(24, 18))
+for n in scale:
+    ax1.scatter(np.arange(.05, 4, .05), all_data['E'][str(n)], label=f'${n}$'+r'$\times$'+f'${n}$'+' lattice', marker=marker[n], color=color[n], s=12)
+    ax1.plot(np.arange(.05, 4, .05), all_data['E'][str(n)], color=color[n])
+    ax1.legend(fontsize=22)
+    ax2.scatter(np.arange(.05, 4, .05), all_data['C'][str(n)], label=f'${n}$'+r'$\times$'+f'${n}$'+' lattice', marker=marker[n], color=color[n], s=12)
+    ax2.plot(np.arange(.05, 4, .05), all_data['C'][str(n)], color=color[n])
+    ax2.legend(fontsize=22)
+    ax3.scatter(np.arange(.05, 4, .05), all_data['M_N'][str(n)], label=f'${n}$'+r'$\times$'+f'${n}$'+' lattice', marker=marker[n], color=color[n], s=12)
+    ax3.plot(np.arange(.05, 4, .05), all_data['M_N'][str(n)], color=color[n])
+    ax3.legend(fontsize=22)
+    ax4.scatter(np.arange(.05, 4, .05), all_data['U_M'][str(n)], label=f'${n}$'+r'$\times$'+f'${n}$'+' lattice', marker=marker[n], color=color[n], s=12)
+    ax4.plot(np.arange(.05, 4, .05), all_data['U_M'][str(n)], color=color[n])
+    ax4.legend(fontsize=22)
+ax1.set_xlabel('$T$', fontsize=22)
+ax1.set_ylabel(r'$\frac{\langle H \rangle}{N}$', fontsize=26)
+ax1.set_title('energy per spin', fontsize=22)
+ax2.set_xlabel('$T$', fontsize=22)
+ax2.set_ylabel(r'$\frac{C}{N}$', fontsize=26)
+ax2.set_title('specific heat per spin', fontsize=22)
+ax3.set_xlabel('$T$', fontsize=22)
+ax3.set_ylabel(r'$\frac{\langle M^2 \rangle}{N^2}$', fontsize=26)
+ax3.set_title('magnetization per spin squared', fontsize=22)
+ax4.set_xlabel('$T$', fontsize=22)
+ax4.set_ylabel(r'$\frac{\langle M^4 \rangle}{\langle M^2 \rangle ^2}$', fontsize=26)
+ax4.set_title('Binder ratio', fontsize=22)
+plt.savefig(r'Graphs/honeycomb-2.png', dpi=600)
+plt.show()
+
+
+
+
+
+
+
+# if __name__ == '__main__':
+#     unittest.main()
