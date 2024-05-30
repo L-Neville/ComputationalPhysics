@@ -264,5 +264,5 @@ class IsingModelHoneycomb():
 # plt.savefig(r'Graphs/honeycomb-2.png', dpi=600)
 # plt.show()
 
-if __name__ == '__main__':
-    unittest.main()
+# if __name__ == '__main__':
+#     unittest.main()
