@@ -6,7 +6,10 @@ class MonteCarloSimulation():
     def __init__(self, J, T, row, col, rounds, mode='Random'):
         self.rounds = rounds
         if mode=='Random':
-            self.lattice = IsingModelHoneycomb(J, T, row, col, np.random.randint(0, 2**(row*col)))
+            try:
+                self.lattice = IsingModelHoneycomb(J, T, row, col, np.random.randint(0, 2**(row*col)))
+            except ValueError:
+                self.lattice = IsingModelHoneycomb(J, T, row, col, np.random.randint(0, 2**(63)-1))
         elif mode=='0':
             self.lattice = IsingModelHoneycomb(J, T, row, col, 0)
         elif mode=='1':

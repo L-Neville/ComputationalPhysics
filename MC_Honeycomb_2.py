@@ -1,4 +1,3 @@
-from Honeycomb_4 import IsingModelHoneycomb
 from MC_Honeycomb_1 import MonteCarloSimulation
 import numpy as np
 import matplotlib.pyplot as plt
